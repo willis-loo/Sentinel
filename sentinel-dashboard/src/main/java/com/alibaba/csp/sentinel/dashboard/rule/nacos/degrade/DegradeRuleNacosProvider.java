@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.csp.sentinel.dashboard.rule.param;
+package com.alibaba.csp.sentinel.dashboard.rule.nacos.degrade;
 
-import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.ParamFlowRuleEntity;
+import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.DegradeRuleEntity;
 import com.alibaba.csp.sentinel.dashboard.rule.DynamicRuleProvider;
 import com.alibaba.csp.sentinel.dashboard.rule.nacos.NacosConfigUtil;
-import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRule;
+import com.alibaba.csp.sentinel.slots.block.degrade.DegradeRule;
 import com.alibaba.csp.sentinel.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -33,22 +33,22 @@ import java.util.stream.Collectors;
  *
  * @author Fox
  */
-@Component("paramFlowRuleNacosProvider")
-public class ParamFlowRuleNacosProvider implements DynamicRuleProvider<List<ParamFlowRuleEntity>> {
+@Component("degradeRuleNacosProvider")
+public class DegradeRuleNacosProvider implements DynamicRuleProvider<List<DegradeRuleEntity>> {
     @Autowired
     private ConfigService configService;
 
-
+    
     @Override
-    public List<ParamFlowRuleEntity> getRules(String appName,String ip,Integer port) throws Exception {
-        String rules = configService.getConfig(appName + NacosConfigUtil.PARAM_FLOW_DATA_ID_POSTFIX,
+    public List<DegradeRuleEntity> getRules(String appName,String ip,Integer port) throws Exception {
+        String rules = configService.getConfig(appName + NacosConfigUtil.DEGRADE_DATA_ID_POSTFIX,
                 NacosConfigUtil.GROUP_ID, NacosConfigUtil.READ_TIMEOUT);
         if (StringUtil.isEmpty(rules)) {
             return new ArrayList<>();
         }
-        List<ParamFlowRule> list = JSON.parseArray(rules, ParamFlowRule.class);
+        List<DegradeRule> list = JSON.parseArray(rules, DegradeRule.class);
         return list.stream().map(rule ->
-                ParamFlowRuleEntity.fromParamFlowRule(appName, ip, port, rule))
+                DegradeRuleEntity.fromDegradeRule(appName, ip, port, rule))
                 .collect(Collectors.toList());
     }
 }

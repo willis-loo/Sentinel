@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alibaba.csp.sentinel.dashboard.rule.authority;
+package com.alibaba.csp.sentinel.dashboard.rule.nacos.system;
 
-import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.AuthorityRuleEntity;
+import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.SystemRuleEntity;
 import com.alibaba.csp.sentinel.dashboard.rule.DynamicRuleProvider;
 import com.alibaba.csp.sentinel.dashboard.rule.nacos.NacosConfigUtil;
-import com.alibaba.csp.sentinel.slots.block.authority.AuthorityRule;
+import com.alibaba.csp.sentinel.slots.system.SystemRule;
 import com.alibaba.csp.sentinel.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -33,22 +33,22 @@ import java.util.stream.Collectors;
  *
  * @author Fox
  */
-@Component("authorityRuleNacosProvider")
-public class AuthorityRuleNacosProvider implements DynamicRuleProvider<List<AuthorityRuleEntity>> {
+@Component("systemRuleNacosProvider")
+public class SystemRuleNacosProvider implements DynamicRuleProvider<List<SystemRuleEntity>> {
     @Autowired
     private ConfigService configService;
-
+    
 
     @Override
-    public List<AuthorityRuleEntity> getRules(String appName,String ip,Integer port) throws Exception {
-        String rules = configService.getConfig(appName + NacosConfigUtil.AUTHORITY_DATA_ID_POSTFIX,
+    public List<SystemRuleEntity> getRules(String appName,String ip,Integer port) throws Exception {
+        String rules = configService.getConfig(appName + NacosConfigUtil.SYSTEM_DATA_ID_POSTFIX,
                 NacosConfigUtil.GROUP_ID, NacosConfigUtil.READ_TIMEOUT);
         if (StringUtil.isEmpty(rules)) {
             return new ArrayList<>();
         }
-        List<AuthorityRule> list = JSON.parseArray(rules, AuthorityRule.class);
+        List<SystemRule> list = JSON.parseArray(rules, SystemRule.class);
         return list.stream().map(rule ->
-                AuthorityRuleEntity.fromAuthorityRule(appName, ip, port, rule))
+                SystemRuleEntity.fromSystemRule(appName, ip, port, rule))
                 .collect(Collectors.toList());
     }
 }
